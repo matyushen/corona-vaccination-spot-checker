@@ -61,19 +61,27 @@ const checkLocation = async (
       ))
     ) {
       const message = `🚨 There might be spots avaliable at ${text}: ${url}`;
-      await axios.post(
-        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`
-      );
       console.log(message);
+      try {
+        await axios.post(
+          `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`
+        );
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       console.log(`No spots avaliable at ${text}: ${url}!`);
     }
   } catch {
     const errorMessage = `Error occured. Could not check spots for ${text}: ${url}`;
-    await axios.post(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${errorMessage}`
-    );
     console.log(errorMessage);
+    try {
+      await axios.post(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${errorMessage}`
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
   await page.close();
   await context.close();
