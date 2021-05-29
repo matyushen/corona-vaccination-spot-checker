@@ -1,6 +1,6 @@
-import { Browser, chromium, Page } from "playwright";
+import { Browser, chromium } from "playwright";
 import axios from "axios";
-import { formatISO } from "date-fns";
+import { getEnvVar, makePageScreenShot } from "./utils";
 
 type VaccinationLocations = {
   url: string;
@@ -42,9 +42,11 @@ const sendMessage = async (message: string): Promise<void> => {
   console.log(message);
   try {
     await axios.post(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+      `https://api.telegram.org/bot${getEnvVar(
+        "TELEGRAM_BOT_TOKEN"
+      )}/sendMessage`,
       {
-        chat_id: process.env.TELEGRAM_CHAT_ID,
+        chat_id: getEnvVar("TELEGRAM_CHAT_ID"),
         text: message,
       }
     );
@@ -66,7 +68,7 @@ const checkLocation = async (
 
   const page = await context.newPage();
   await page.goto(url);
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(3000);
 
   try {
     if (
@@ -77,9 +79,7 @@ const checkLocation = async (
         "#booking-content .booking-availabilities .availabilities-day"
       ))
     ) {
-      await page.screenshot({
-        path: `screenshots/screenshot-${formatISO(new Date())}.png`,
-      });
+      await makePageScreenShot(page);
       await sendMessage(`🚨 There might be slots avaliable at ${text}: ${url}`);
     } else {
       console.log(`No slots avaliable at ${text}: ${url}!`);
