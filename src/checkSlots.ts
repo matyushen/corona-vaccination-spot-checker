@@ -1,5 +1,6 @@
 import { Browser, chromium, Page } from "playwright";
 import axios from "axios";
+import { formatISO } from "date-fns";
 
 type VaccinationLocations = {
   url: string;
@@ -65,7 +66,7 @@ const checkLocation = async (
 
   const page = await context.newPage();
   await page.goto(url);
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(2000);
 
   try {
     if (
@@ -76,6 +77,9 @@ const checkLocation = async (
         "#booking-content .booking-availabilities .availabilities-day"
       ))
     ) {
+      await page.screenshot({
+        path: `screenshots/screenshot-${formatISO(new Date())}.png`,
+      });
       await sendMessage(`🚨 There might be slots avaliable at ${text}: ${url}`);
     } else {
       console.log(`No slots avaliable at ${text}: ${url}!`);
@@ -90,7 +94,7 @@ const checkLocation = async (
 };
 
 export const checkSlots = async () => {
-  const browser = await chromium.launch({ headless: true, slowMo: 1000 });
+  const browser = await chromium.launch({ headless: true });
   for (const location of vaccinationLocations) {
     await checkLocation(location, browser);
   }
