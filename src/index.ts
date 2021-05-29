@@ -64,7 +64,13 @@ const checkLocation = async (
       console.log(message);
       try {
         await axios.post(
-          `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`
+          `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+          {
+            params: {
+              chat_id: process.env.TELEGRAM_CHAT_ID,
+              text: message,
+            },
+          }
         );
       } catch (error) {
         console.error(error);
@@ -77,7 +83,13 @@ const checkLocation = async (
     console.log(errorMessage);
     try {
       await axios.post(
-        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${errorMessage}`
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          params: {
+            chat_id: process.env.TELEGRAM_CHAT_ID,
+            text: errorMessage,
+          },
+        }
       );
     } catch (error) {
       console.error(error);
