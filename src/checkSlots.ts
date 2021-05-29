@@ -41,7 +41,11 @@ const sendMessage = async (message: string): Promise<void> => {
   console.log(message);
   try {
     await axios.post(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`
+      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+      {
+        chat_id: process.env.TELEGRAM_CHAT_ID,
+        text: message,
+      }
     );
   } catch (error) {
     console.error(error);
