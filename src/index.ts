@@ -73,7 +73,8 @@ const checkLocation = async (
     await axios.post(
       `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${errorMessage}`
     );
-    console.log(errorMessage, e);
+    console.log(errorMessage);
+    throw new Error(e);
   }
   await page.close();
   await context.close();
