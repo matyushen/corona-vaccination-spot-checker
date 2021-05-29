@@ -1,0 +1,19 @@
+{
+  "name": "corona-vaccination-spot-checker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/matyushen/corona-vaccination-spot-checker.git",
+  "author": "Nikita Matyushenko <matyushen@users.noreply.github.com>",
+  "license": "MIT",
+  "scripts": {
+    "check-spots": "ts-node -r dotenv/config src/index.ts"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "date-fns": "^2.22.1",
+    "dotenv": "^10.0.0",
+    "playwright": "^1.11.1",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2"
+  }
+}
