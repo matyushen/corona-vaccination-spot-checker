@@ -25,20 +25,21 @@ const check = async (text: string, page: Page): Promise<void> => {
     } else {
       console.log(`No spots avaliable at ${text}: ${url}!`);
     }
-  } catch {
-    console.log(`Error occured. Could not check spots for ${text}: ${url}!`);
+  } catch (e) {
+    const errorMessage = `Error occured. Could not check spots for ${text}: ${url}!`;
+    await axios.post(
+      `https://api.telegram.org/bot${getEnvVar(
+        "TELEGRAM_BOT_TOKEN"
+      )}/sendMessage?chat_id=${getEnvVar(
+        "TELEGRAM_CHAT_ID"
+      )}&text=${errorMessage}`
+    );
+    console.log(errorMessage);
+    throw new Error(e);
   }
 };
 
 (async () => {
-  await axios.post(
-    `https://api.telegram.org/bot${getEnvVar(
-      "TELEGRAM_BOT_TOKEN"
-    )}/sendMessage?chat_id=${getEnvVar(
-      "TELEGRAM_CHAT_ID"
-    )}&text=${"Checking Corona vaccination slots..."}`
-  );
-
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: {
@@ -61,10 +62,4 @@ const check = async (text: string, page: Page): Promise<void> => {
   await page.close();
   await context.close();
   await browser.close();
-
-  await axios.post(
-    `https://api.telegram.org/bot${getEnvVar(
-      "TELEGRAM_BOT_TOKEN"
-    )}/sendMessage?chat_id=${getEnvVar("TELEGRAM_CHAT_ID")}&text=${"Done."}`
-  );
 })();
