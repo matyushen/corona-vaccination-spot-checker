@@ -63,6 +63,7 @@ const checkLocation = async (
 
   const page = await context.newPage();
   await page.goto(url);
+  await page.waitForTimeout(1000);
 
   try {
     if (
