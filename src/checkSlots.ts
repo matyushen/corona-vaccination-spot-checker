@@ -41,9 +41,7 @@ const sendMessage = async (message: string): Promise<void> => {
   console.log(message);
   try {
     await axios.post(
-      encodeURI(
-        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`
-      )
+      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`
     );
   } catch (error) {
     console.error(error);
@@ -87,10 +85,10 @@ const checkLocation = async (
   await context.close();
 };
 
-(async () => {
+export const checkSlots = async () => {
   const browser = await chromium.launch({ headless: true, slowMo: 1000 });
   for (const location of vaccinationLocations) {
     await checkLocation(location, browser);
   }
   await browser.close();
-})();
+};

@@ -23,4 +23,4 @@ jobs:
         run: yarn
 
       - name: Running script...
-        run: yarn check-spots
+        run: yarn run-check-slots
