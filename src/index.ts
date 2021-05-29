@@ -37,6 +37,19 @@ const vaccinationLocations: VaccinationLocations[] = [
   },
 ];
 
+const sendMessage = async (message: string): Promise<void> => {
+  console.log(message);
+  try {
+    await axios.post(
+      encodeURI(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`
+      )
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const checkLocation = async (
   { url, text }: VaccinationLocations,
   browser: Browser
@@ -60,40 +73,14 @@ const checkLocation = async (
         "#booking-content .booking-availabilities .availabilities-day"
       ))
     ) {
-      const message = `🚨 There might be spots avaliable at ${text}: ${url}`;
-      console.log(message);
-      try {
-        await axios.post(
-          `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-          {
-            params: {
-              chat_id: process.env.TELEGRAM_CHAT_ID,
-              text: message,
-            },
-          }
-        );
-      } catch (error) {
-        console.error(error);
-      }
+      await sendMessage(`🚨 There might be slots avaliable at ${text}: ${url}`);
     } else {
-      console.log(`No spots avaliable at ${text}: ${url}!`);
+      console.log(`No slots avaliable at ${text}: ${url}!`);
     }
   } catch {
-    const errorMessage = `Error occured. Could not check spots for ${text}: ${url}`;
-    console.log(errorMessage);
-    try {
-      await axios.post(
-        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          params: {
-            chat_id: process.env.TELEGRAM_CHAT_ID,
-            text: errorMessage,
-          },
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    await sendMessage(
+      `Error occured. Could not check slots for ${text}: ${url}`
+    );
   }
   await page.close();
   await context.close();
