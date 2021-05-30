@@ -88,7 +88,7 @@ const checkLocation = async (
 };
 
 export const checkSlots = async () => {
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({ headless: true });
   for (const location of vaccinationLocations) {
     await checkLocation(location, browser);
   }
