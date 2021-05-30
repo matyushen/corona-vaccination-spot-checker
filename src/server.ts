@@ -7,7 +7,7 @@ const app = express();
 
 let count = 1;
 
-const task = cron.schedule("*/1 * * * *", async () => {
+const task = cron.schedule("*/3 * * * *", async () => {
   console.log(`🚀 Running a #${count} cycle`);
   await checkSlots();
   count += 1;
