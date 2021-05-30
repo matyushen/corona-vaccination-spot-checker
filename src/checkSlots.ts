@@ -48,7 +48,6 @@ const sendMessage = async (message: string, page: Page): Promise<void> => {
   const path = `artifacts/screenshots/screenshot-${formatISO(new Date())}.png`;
   await page.screenshot({
     path,
-    fullPage: true,
   });
 
   client
@@ -92,7 +91,7 @@ const checkLocation = async (
         page
       );
     } else {
-      console.log(`No slots avaliable at ${text}: ${url}!`);
+      console.log(`No slots avaliable at ${text}...`);
     }
   } catch {
     await sendMessage(
