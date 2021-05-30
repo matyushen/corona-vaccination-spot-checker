@@ -69,10 +69,9 @@ const checkLocation = async (
   });
   const page = await context.newPage();
   await page.goto(url);
-  await page.waitForTimeout(5000);
 
   try {
-    if (await page.isVisible("text=Wählen Sie einen ersten Termin aus")) {
+    if (await page.isVisible(".availabilities-slot-section")) {
       await makePageScreenShot(page);
       await sendMessage(`🚨 There might be slots avaliable at ${text}: ${url}`);
     } else {
