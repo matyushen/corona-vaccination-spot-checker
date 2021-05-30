@@ -69,10 +69,16 @@ const checkLocation = async (
   });
   const page = await context.newPage();
   await page.goto(url);
+  await page.click(
+    '[aria-label="Unsere Datenverarbeitung akzeptieren und schließen"]'
+  );
+
+  await page.waitForTimeout(4000);
+
+  const cards = await page.$$(".dl-availabilities-card");
 
   try {
-    if (await page.isVisible(".availabilities-slot-section")) {
-      await makePageScreenShot(page);
+    if (cards.length > 0) {
       await sendMessage(`🚨 There might be slots avaliable at ${text}: ${url}`);
     } else {
       console.log(`No slots avaliable at ${text}: ${url}!`);
