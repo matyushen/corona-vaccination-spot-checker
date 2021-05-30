@@ -1,6 +1,12 @@
-import { Browser, chromium } from "playwright";
-import axios from "axios";
-import { getEnvVar, makePageScreenShot } from "./utils";
+import { Browser, chromium, Page } from "playwright";
+import { getEnvVar } from "./utils";
+import { formatISO } from "date-fns";
+import { createReadStream } from "fs";
+const telegram = require("telegram-bot-api");
+
+const client = new telegram({
+  token: getEnvVar("TELEGRAM_BOT_TOKEN"),
+});
 
 type VaccinationLocations = {
   url: string;
@@ -38,21 +44,23 @@ const vaccinationLocations: VaccinationLocations[] = [
   },
 ];
 
-const sendMessage = async (message: string): Promise<void> => {
-  console.log(message);
-  try {
-    await axios.post(
-      `https://api.telegram.org/bot${getEnvVar(
-        "TELEGRAM_BOT_TOKEN"
-      )}/sendMessage`,
-      {
-        chat_id: getEnvVar("TELEGRAM_CHAT_ID"),
-        text: message,
-      }
-    );
-  } catch (error) {
-    console.error(error);
-  }
+const sendMessage = async (message: string, page: Page): Promise<void> => {
+  const path = `artifacts/screenshots/screenshot-${formatISO(new Date())}.png`;
+  await page.screenshot({
+    path,
+    fullPage: true,
+  });
+
+  client
+    .sendPhoto({
+      chat_id: getEnvVar("TELEGRAM_CHAT_ID"),
+      caption: message,
+      photo: createReadStream(path),
+    })
+    .then(() => {
+      console.log(message);
+    })
+    .catch(console.error);
 };
 
 const checkLocation = async (
@@ -79,13 +87,17 @@ const checkLocation = async (
 
   try {
     if (cards.length > 0) {
-      await sendMessage(`🚨 There might be slots avaliable at ${text}: ${url}`);
+      await sendMessage(
+        `🚨 There might be slots avaliable at ${text}: ${url}`,
+        page
+      );
     } else {
       console.log(`No slots avaliable at ${text}: ${url}!`);
     }
   } catch {
     await sendMessage(
-      `Error occured. Could not check slots for ${text}: ${url}`
+      `Error occured. Could not check slots for ${text}: ${url}`,
+      page
     );
   }
   await page.close();
