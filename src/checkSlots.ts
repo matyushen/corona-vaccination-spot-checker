@@ -15,31 +15,31 @@ type VaccinationLocations = {
 
 const vaccinationLocations: VaccinationLocations[] = [
   {
-    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin/booking/availabilities?motiveKey=Erstimpfung%20Covid-19%20%28BioNTech-Pfizer%29-1779-impfung-covid-19-1779&placeId=practice-158431&specialityId=1779",
+    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin?pid=practice-158431",
     text: "Arena Berlin",
   },
   {
-    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin/booking/availabilities?motiveKey=Erstimpfung%20Covid-19%20%28BioNTech-Pfizer%29-1779-impfung-covid-19-1779&placeId=practice-158434&specialityId=1779",
+    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin?pid=practice-158434",
     text: "Messe Berlin/ Halle 21",
   },
   {
-    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin/booking/availabilities?motiveKey=Erstimpfung%20Covid-19%20%28Moderna%29-1779-impfung-covid-19-1779&placeId=practice-158437&specialityId=1779",
+    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin?pid=practice-158437",
     text: "Erika-Heß-Eisstadion",
   },
   {
-    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin/booking/availabilities?motiveKey=Erstimpfung%20Covid-19%20%28BioNTech-Pfizer%29-1779-impfung-covid-19-1779&placeId=practice-158435&specialityId=1779",
+    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin?pid=practice-158435",
     text: "Velodrom Berlin",
   },
   {
-    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin/booking/availabilities?motiveKey=Erstimpfung%20Covid-19%20%28BioNTech-Pfizer%29-1779-impfung-covid-19-1779&placeId=practice-158436&specialityId=1779",
+    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin?pid=practice-158436",
     text: "Flughafen Tegel",
   },
   {
-    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin/booking/availabilities?motiveKey=Erstimpfung%20Covid-19%20%28Moderna%29-1779-impfung-covid-19-1779&placeId=practice-191611&specialityId=1779",
+    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin?pid=practice-191611",
     text: "Flughafen Tempelhof (Moderna)",
   },
   {
-    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin/booking/availabilities?motiveKey=Erstimpfung%20Covid-19%20%28Moderna%29-1779-impfung-covid-19-1779&placeId=practice-191612&specialityId=1779",
+    url: "https://www.doctolib.de/institut/berlin/ciz-berlin-berlin?pid=practice-191612",
     text: "Flughafen Tegel (Moderna)",
   },
 ];
@@ -68,11 +68,11 @@ const checkLocation = async (
 ): Promise<void> => {
   const context = await browser.newContext({
     viewport: {
-      width: 375,
-      height: 812,
+      width: 1440,
+      height: 900,
     },
     userAgent:
-      "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Mobile/15E148 Safari/604.1",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36",
   });
   const page = await context.newPage();
   await page.goto(url);
@@ -80,12 +80,14 @@ const checkLocation = async (
     '[aria-label="Unsere Datenverarbeitung akzeptieren und schließen"]'
   );
 
-  await page.waitForTimeout(4000);
+  await page.waitForTimeout(5000);
 
-  const cards = await page.$$(".dl-availabilities-card");
+  const warningTextVisible = await page.isVisible(
+    ".booking-message.booking-message-warning"
+  );
 
   try {
-    if (cards.length > 0) {
+    if (!warningTextVisible) {
       await sendMessage(
         `🚨 There might be slots avaliable at ${text}: ${url}`,
         page
@@ -104,7 +106,9 @@ const checkLocation = async (
 };
 
 export const checkSlots = async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: getEnvVar("HEADLESS") === "true",
+  });
   for (const location of vaccinationLocations) {
     await checkLocation(location, browser);
   }
